@@ -1,0 +1,49 @@
+import * as esbuild from 'esbuild-wasm';
+
+// import axios from 'axios';
+// import localForage from 'localforage';
+// const fileCache = localForage.createInstance (
+//   {
+//     name:'fileCache'
+//   }
+// );
+
+// (async ()=>{
+// await fileCache.setItem('color','red')
+// // const color=await fileCache.getItem('color');
+// // console.log(color)
+// })();
+
+export const unpkgPathPlugin = () => {
+  return {
+    name: 'unpkg-path-plugin',
+    setup(build: esbuild.PluginBuild) {
+      build.onResolve({ filter: /^index\.js$/ }, () => {
+        // console.log('onResole', args);
+       return {
+         path:'index.js' , namespace:'a'
+       }
+      });
+
+        build.onResolve({ filter: /^\.+\// },(args:any)=>{
+          return{
+            namespace:'a',
+          path : new URL(args.path ,'https://unpkg.com' + args.resolveDir +'/').href}
+        }) 
+        build.onResolve({ filter: /.*/ },async(args:any)=>{
+        return{
+          namespace:'a',
+          path:`https://unpkg.com/${args.path}`
+        }
+      });
+      
+        // else{
+        //   if(args.path==='medium-test-pkg') {
+        //     return { path: 'https://unpkg.com/medium-test-pkg@1.0.0/index.js' , namespace :'a'} 
+        //   }}
+        
+  
+
+    },
+  };
+};
